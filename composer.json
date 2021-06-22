@@ -1,0 +1,19 @@
+{
+    "name": "dannyvandersluijs/picqer-exact-php-client-generator",
+    "description": "A generator for the picqer eaxct php client models",
+    "type": "project",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "symfony/console": "^5.3",
+        "php": "^8.0",
+        "dannyvandersluijs/exact-online-meta-data-tool": "dev-develop",
+        "json-mapper/json-mapper": "^2.5",
+        "symfony/templating": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "PicqerExactPhpClientGenerator\\": "src/"
+        }
+    }
+}
