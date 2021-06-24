@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PicqerExactPhpClientGenerator\Command;
 
 use MetaDataTool\Command\MetaDataBuilderCommand;
+use PicqerExactPhpClientGenerator\Decorator\EndpointDecorator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\String\Inflector\EnglishInflector;
 use Symfony\Component\Templating\Helper\SlotsHelper;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Component\Templating\PhpEngine;
@@ -21,6 +23,7 @@ class ModelGenerateCommand extends Command
 {
     protected static string $defaultName = 'run';
     protected static string $metaDataFile = '.meta/meta-data.json';
+    private EnglishInflector $inflector;
 
     protected function configure(): void
     {
@@ -57,37 +60,28 @@ HELP
         $templating->set(new SlotsHelper());
 
         foreach ($json as $endpoint) {
-           $file = sprintf(
+            $decoratedEndpoint = new EndpointDecorator($endpoint);
+            $file = sprintf(
                '%s/src/Picqer/Financials/Exact/%s.php',
                $input->getArgument('sources'),
-               substr($endpoint->endpoint, 0, -1)
+               $decoratedEndpoint->getClassName()
            );
 
-           if (!is_readable($file)) {
-               $output->writeln(sprintf('Unable to find file "%s" for endpoint "%s"', $file, $endpoint->endpoint));
-               continue;
-           }
-
-           $endpoint->properties = array_filter($endpoint->properties, static function ($p) { return strtolower($p->description) !== 'obsolete'; });
-           foreach ($endpoint->properties as $key => $property) {
-               if (str_starts_with($property->description, 'Collection')) {
-                   $endpoint->properties[$key]->type = substr($property->type, 0, -1) . '[]';
-                   continue;
-               }
-               $endpoint->properties[$key]->type = match ($property->type) {
-                   'Edm.Int32', 'Edm.Int16', 'Edm.Byte' => 'int',
-                   'Edm.Double' => 'float',
-                   'Edm.Boolean' => 'bool',
-                   default => 'string'
-               };
-           }
-
-            $src = $templating->render('model.php', ['endpoint' => $endpoint]);
+            $src = $templating->render('model.php', ['endpoint' => $decoratedEndpoint]);
 
             file_put_contents($file, "<?php\n\n$src");
-            $output->writeln(sprintf('Updated file "%s" for endpoint "%s"', $file, $endpoint->endpoint));
+            $output->writeln(sprintf('Updated/Created file "%s" for endpoint "%s"', $file, $endpoint->endpoint));
         }
 
         return 0;
+    }
+
+    private function getInflector(): EnglishInflector
+    {
+        if (is_null($this->inflector)) {
+            $this->inflector = new EnglishInflector();
+        }
+
+        return $this->inflector;
     }
 }

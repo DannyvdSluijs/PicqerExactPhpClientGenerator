@@ -50125,6 +50125,18 @@
                 }
             },
             {
+                "name": "InvoiceCorrectionMethod",
+                "type": "Edm.Int16",
+                "description": "Invoice correction method: 1=Ratio based, 2=Zero Invoice",
+                "primaryKey": false,
+                "supportedMethods": {
+                    "get": true,
+                    "post": true,
+                    "put": true,
+                    "delete": false
+                }
+            },
+            {
                 "name": "Modified",
                 "type": "Edm.DateTime",
                 "description": "Last modified date of subscription type",

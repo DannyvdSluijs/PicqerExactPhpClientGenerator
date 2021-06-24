@@ -1,25 +1,30 @@
 namespace Picqer\Financials\Exact;
 
 /**
- * Class <?php echo substr($endpoint->endpoint, 0, -1); ?>.
+ * Class <?php echo $endpoint->getClassName(); ?>.
  *
- * @package Picqer\Financials\Exact
  * @see <?php echo $endpoint->documentation . PHP_EOL; ?>
  *
-<?php foreach ($endpoint->properties as $property): ?>
- * @property <?php echo sprintf("%s \$%s %s\n", $property->type, $property->name, $property->description); ?>
+<?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
+ * <?php echo $property->toPhpDoc(); ?>
 <?php endforeach; ?>
  */
-class <?php echo substr($endpoint->endpoint, 0, -1); ?> extends Model
+class <?php echo $endpoint->getClassName(); ?> extends Model
 {
     use Query\Findable;
+<?php if ($endpoint->supportsPostMethod()): ?>
     use Persistance\Storable;
+<?php endif; ?>
 
+<?php if ($endpoint->hasNonDefaultPrimaryKeyProperty()): ?>
+    protected $primaryKey = '<?php echo $endpoint->primaryKeyProperty()->name; ?>';
+
+<?php endif; ?>
     protected $fillable = [
-<?php foreach ($endpoint->properties as $property): ?>
+<?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
         '<?php echo $property->name; ?>',
 <?php endforeach; ?>
     ];
 
-    protected $url = '<?php echo substr($endpoint->uri, 19); ?>';
+    protected $url = '<?php echo $endpoint->getClassUri(); ?>';
 }
