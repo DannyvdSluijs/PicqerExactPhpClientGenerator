@@ -8,14 +8,13 @@ use Symfony\Component\String\Inflector\EnglishInflector;
 
 class EndpointDecorator
 {
-    /** @var \stdClass */
-    private $endpoint;
-    /** @var EnglishInflector */
-    private $inflector;
+    private ?EnglishInflector $inflector;
 
-    public function __construct(\stdClass $endpoint)
+    public function __construct(
+        private \stdClass $endpoint,
+        private string $path
+    )
     {
-        $this->endpoint = $endpoint;
     }
 
     public function __get(string $param)
@@ -25,6 +24,11 @@ class EndpointDecorator
             'documentation' => $this->decorateDocumentation(),
             default => $this->endpoint->{$param}
         };
+    }
+
+    public function getFilename(): string
+    {
+        return sprintf('%s/src/Picqer/Financials/Exact/%s.php', $this->path, $this->getClassName());
     }
 
     public function getNonObsoleteProperties(): array
@@ -39,6 +43,16 @@ class EndpointDecorator
 
     public function getClassName(): string
     {
+        // Some cases dont follow the naming conventions
+        $namingConventionExceptions = [
+            '/api/v1/system/Users' => 'SystemUser',
+            '/api/v1/{division}/system/Divisions' => 'SystemDivision',
+        ];
+
+        if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
+            return $namingConventionExceptions[$this->endpoint->uri];
+        }
+
         // Some cases arent properly handled by inflector
         $exceptions = [
             'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
@@ -88,9 +102,14 @@ class EndpointDecorator
         return $this->endpoint->supportedMethods->post;
     }
 
+    public function supportsPutMethod(): bool
+    {
+        return $this->endpoint->supportedMethods->post;
+    }
+
     private function getInflector(): EnglishInflector
     {
-        if (is_null($this->inflector)) {
+        if (!isset($this->inflector)) {
             $this->inflector = new EnglishInflector();
         }
 

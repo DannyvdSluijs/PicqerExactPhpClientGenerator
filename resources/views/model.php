@@ -12,7 +12,7 @@ namespace Picqer\Financials\Exact;
 class <?php echo $endpoint->getClassName(); ?> extends Model
 {
     use Query\Findable;
-<?php if ($endpoint->supportsPostMethod()): ?>
+<?php if ($endpoint->supportsPostMethod() || $endpoint->supportsPutMethod()): ?>
     use Persistance\Storable;
 <?php endif; ?>
 
@@ -20,11 +20,19 @@ class <?php echo $endpoint->getClassName(); ?> extends Model
     protected $primaryKey = '<?php echo $endpoint->primaryKeyProperty()->name; ?>';
 
 <?php endif; ?>
+<?php foreach ($properties as $property): ?>
+    <?php echo $property . PHP_EOL; ?>
+
+<?php endforeach; ?>
     protected $fillable = [
 <?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
         '<?php echo $property->name; ?>',
 <?php endforeach; ?>
     ];
+<?php foreach ($methods as $method): ?>
+
+    <?php echo $method . PHP_EOL; ?>
+<?php endforeach; ?>
 
     protected $url = '<?php echo $endpoint->getClassUri(); ?>';
 }

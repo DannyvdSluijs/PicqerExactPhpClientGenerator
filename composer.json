@@ -10,7 +10,8 @@
         "dannyvandersluijs/exact-online-meta-data-tool": "dev-develop",
         "json-mapper/json-mapper": "^2.5",
         "symfony/templating": "^5.3",
-        "symfony/string": "^5.3"
+        "symfony/string": "^5.3",
+        "nikic/php-parser": "^4.10"
     },
     "autoload": {
         "psr-4": {

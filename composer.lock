@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "089cff9033093e776225a4db5f0ea009",
+    "content-hash": "aac9f911ad428875baa30b1f5243bfd9",
     "packages": [
         {
             "name": "dannyvandersluijs/exact-online-meta-data-tool",
