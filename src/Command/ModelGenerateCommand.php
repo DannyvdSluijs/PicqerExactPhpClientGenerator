@@ -80,11 +80,12 @@ HELP
             $filename = $decoratedEndpoint->getFilename();
 
             if (is_readable($filename)) {
-                [$properties, $traits, $methods] = $this->extractExistingCode($filename);
+                [$additionalClassDocComment, $properties, $traits, $methods] = $this->extractExistingCode($filename);
             }
 
             $src = $templating->render('model.php', [
                 'endpoint' => $decoratedEndpoint,
+                'additionalClassDocComment' => $additionalClassDocComment,
                 'properties' => $properties,
                 'traits' => $traits,
                 'methods' => $methods,
@@ -130,6 +131,6 @@ HELP
 
         $traverser->traverse($ast);
 
-        return [$codeExtractor->getProperties(), $codeExtractor->getTraits(), $codeExtractor->getFunctions()];
+        return [$codeExtractor->getAdditionalClassDocComment(), $codeExtractor->getProperties(), $codeExtractor->getTraits(), $codeExtractor->getFunctions()];
     }
 }

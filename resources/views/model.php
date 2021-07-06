@@ -8,6 +8,9 @@ namespace Picqer\Financials\Exact;
 <?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
  * <?php echo $property->toPhpDoc(); ?>
 <?php endforeach; ?>
+<?php if (!is_null($additionalClassDocComment)):
+    echo $additionalClassDocComment . PHP_EOL;
+endif; ?>
  */
 class <?php echo $endpoint->getClassName(); ?> extends Model
 {
