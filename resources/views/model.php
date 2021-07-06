@@ -15,6 +15,9 @@ class <?php echo $endpoint->getClassName(); ?> extends Model
 <?php if ($endpoint->supportsPostMethod() || $endpoint->supportsPutMethod()): ?>
     use Persistance\Storable;
 <?php endif; ?>
+<?php if(in_array('Persistance\Downloadable', $traits)): ?>
+    use Persistance\Downloadable;
+<?php endif; ?>
 
 <?php if ($endpoint->hasNonDefaultPrimaryKeyProperty()): ?>
     protected $primaryKey = '<?php echo $endpoint->primaryKeyProperty()->name; ?>';
@@ -29,10 +32,10 @@ class <?php echo $endpoint->getClassName(); ?> extends Model
         '<?php echo $property->name; ?>',
 <?php endforeach; ?>
     ];
+
+    protected $url = '<?php echo $endpoint->getClassUri(); ?>';
 <?php foreach ($methods as $method): ?>
 
     <?php echo $method . PHP_EOL; ?>
 <?php endforeach; ?>
-
-    protected $url = '<?php echo $endpoint->getClassUri(); ?>';
 }

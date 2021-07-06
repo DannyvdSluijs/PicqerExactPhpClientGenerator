@@ -40,6 +40,7 @@ HELP
             )->setDefinition([
                 new InputArgument('sources', InputArgument::REQUIRED, 'The filepath to picqer exact php client sources'),
                 new InputOption('refresh-meta-data', 'R', InputOption::VALUE_NONE, 'Force meta data refresh'),
+                new InputOption('endpoint', 'E', InputOption::VALUE_REQUIRED, 'Process a single endpoint'),
             ]);
     }
 
@@ -64,17 +65,28 @@ HELP
         $templating = new PhpEngine(new TemplateNameParser(), $filesystemLoader);
         $templating->set(new SlotsHelper());
 
-        foreach ($json as $endpoint) {
+
+        if ($input->getOption('endpoint')) {
+            $desiredEndpoint = $input->getOption('endpoint');
+            $endpoints = array_filter($json, static function($endpoint) use ($desiredEndpoint) {
+                return $endpoint->endpoint === $desiredEndpoint;
+            });
+        } else {
+            $endpoints = $json;
+        }
+
+        foreach ($endpoints as $endpoint) {
             $decoratedEndpoint = new EndpointDecorator($endpoint, $input->getArgument('sources'));
             $filename = $decoratedEndpoint->getFilename();
 
             if (is_readable($filename)) {
-                [$properties, $methods] = $this->extractExistingCode($filename);
+                [$properties, $traits, $methods] = $this->extractExistingCode($filename);
             }
 
             $src = $templating->render('model.php', [
                 'endpoint' => $decoratedEndpoint,
                 'properties' => $properties,
+                'traits' => $traits,
                 'methods' => $methods,
             ]);
 
@@ -113,11 +125,11 @@ HELP
         }
 
         $traverser = new NodeTraverser();
-        $classFunctionExtractor = new CodeExtractor();
-        $traverser->addVisitor($classFunctionExtractor);
+        $codeExtractor = new CodeExtractor();
+        $traverser->addVisitor($codeExtractor);
 
         $traverser->traverse($ast);
 
-        return [$classFunctionExtractor->getProperties(), $classFunctionExtractor->getFunctions()];
+        return [$codeExtractor->getProperties(), $codeExtractor->getTraits(), $codeExtractor->getFunctions()];
     }
 }

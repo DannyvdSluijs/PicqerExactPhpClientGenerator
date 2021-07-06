@@ -7,6 +7,7 @@ namespace PicqerExactPhpClientGenerator\Extractor;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\PrettyPrinter\Standard;
 
@@ -15,6 +16,7 @@ class CodeExtractor extends NodeVisitorAbstract
     private const SKIPPED_PROPERTIES = ['fillable', 'primaryKey', 'url'];
     private Standard $printer;
     private array $functions = [];
+    private array $traits = [];
     private array $properties = [];
 
 
@@ -28,6 +30,10 @@ class CodeExtractor extends NodeVisitorAbstract
         if ($node instanceof ClassMethod) {
             $method = $this->printer->prettyPrint([$node]);
             $this->functions[] = str_replace(["\n", "(isset", "(!isset"], ["\n    ", '( isset', "(! isset"], $method);
+        }
+
+        if ($node instanceof TraitUse) {
+            $this->traits[] = implode('\\', $node->traits[0]->parts);
         }
 
         if ($node instanceof Property) {
@@ -51,5 +57,10 @@ class CodeExtractor extends NodeVisitorAbstract
     public function getProperties(): array
     {
         return $this->properties;
+    }
+
+    public function getTraits(): array
+    {
+        return $this->traits;
     }
 }
