@@ -20,6 +20,7 @@ class PropertyDecorator
     {
         return match ($param) {
             'type' => $this->getType(),
+            'description' => $this->getDescription(),
             default => $this->property->{$param}
         };
     }
@@ -30,13 +31,22 @@ class PropertyDecorator
             '@property %s $%s %s',
             $this->getType(),
             $this->property->name,
-            $this->property->description
+            $this->getDescription(),
         )) . PHP_EOL;
+    }
+
+    private function getDescription(): string
+    {
+        if (str_starts_with($this->property->description, 'http')) {
+            return "See {$this->property->description} for more explanation";
+        }
+
+        return $this->property->description;
     }
 
     private function getType(): string
     {
-        if (str_starts_with($this->property->description, 'Collection') || ! str_starts_with($this->property->type, 'Edm.')) {
+        if (str_starts_with($this->property->description, 'Collection') || (! str_starts_with($this->property->type, 'Edm.') && ! str_starts_with($this->property->type, 'Class_'))) {
             // Some cases arent properly handled by inflector
             $exceptions = [
                 'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
@@ -55,6 +65,7 @@ class PropertyDecorator
         }
 
         return match ($this->property->type) {
+            'Class_01', 'Class_02', 'Class_03', 'Class_04', 'Class_05' => 'DivisionClass',
             'Edm.Int64', 'Edm.Int32', 'Edm.Int16', 'Edm.Byte' => 'int',
             'Edm.Double' => 'float',
             'Edm.Boolean' => 'bool',

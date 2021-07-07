@@ -74,7 +74,15 @@ class EndpointDecorator
 
     public function getClassUri(): string
     {
-        return substr($this->endpoint->uri, 19);
+        if (str_starts_with($this->endpoint->uri, '/api/v1/{division}/')) {
+            return substr($this->endpoint->uri, 19);
+        }
+
+        if (str_starts_with($this->endpoint->uri, '/api/v1/')) {
+            return substr($this->endpoint->uri, 8);
+        }
+
+        return  $this->endpoint->uri;
     }
 
     public function hasNonDefaultPrimaryKeyProperty(): bool
