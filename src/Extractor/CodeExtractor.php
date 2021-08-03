@@ -4,82 +4,46 @@ declare(strict_types=1);
 
 namespace PicqerExactPhpClientGenerator\Extractor;
 
-use PhpParser\Node;
-use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\Stmt\TraitUse;
-use PhpParser\NodeVisitorAbstract;
-use PhpParser\PrettyPrinter\Standard;
 
-class CodeExtractor extends NodeVisitorAbstract
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
+use PhpParser\Lexer;
+use PicqerExactPhpClientGenerator\Extractor\ValueObject\CodeExtract;
+use Throwable;
+
+class CodeExtractor
 {
-    private const SKIPPED_PROPERTIES = ['fillable', 'primaryKey', 'url'];
-    private Standard $printer;
-    private ?string $additionalClassDocComment = null;
-    private array $functions = [];
-    private array $traits = [];
-    private array $properties = [];
 
-
-    public function __construct()
+    public function __construct(
+        private string $filename
+    )
     {
-        $this->printer = new Standard();
     }
 
-    public function enterNode(Node $node): void
+    public function extract(): CodeExtract
     {
-        if ($node instanceof Class_) {
-            $classDocComment = $node->getDocComment()->getText();
-            $lines = explode("\n", $classDocComment);
-            $lines = array_slice($lines, 5);
-            $lines = array_filter($lines, static function ($line) { return ! str_contains($line, '@property'); });
-            array_pop($lines);
+        $lexer = new Lexer\Emulative([
+            'usedAttributes' => [
+                'comments',
+                'startLine', 'endLine',
+                'startTokenPos', 'endTokenPos',
+            ],
+        ]);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
 
-            if (count($lines) !== 0) {
-                $this->additionalClassDocComment = implode("\n", $lines);
-            }
+        $code = file_get_contents($this->filename);
+        try {
+            $ast = $parser->parse($code);
+        } catch (Throwable $error) {
+            throw new \RuntimeException("An error occurred ({$error->getMessage()}) while parsing code from $this->filename");
         }
 
-        if ($node instanceof ClassMethod) {
-            $method = $this->printer->prettyPrint([$node]);
-            $this->functions[] = str_replace(["\n", "(isset", "(!isset"], ["\n    ", '( isset', "(! isset"], $method);
-        }
+        $traverser = new NodeTraverser();
+        $codeExtractor = new CodeExtractorNodeVisitor($this->filename);
+        $traverser->addVisitor($codeExtractor);
 
-        if ($node instanceof TraitUse) {
-            $this->traits[] = implode('\\', $node->traits[0]->parts);
-        }
+        $traverser->traverse($ast);
 
-        if ($node instanceof Property) {
-            $result = array_filter($node->props, function (Node\Stmt\PropertyProperty $prop) {
-                return in_array($prop->name->name, self::SKIPPED_PROPERTIES);
-            });
-            if (count($result) > 0) {
-                return;
-            }
-
-            $property = $this->printer->prettyPrint([$node]);
-            $this->properties[] = $property;
-        }
-    }
-
-    public function getAdditionalClassDocComment(): ?string
-    {
-        return $this->additionalClassDocComment;
-    }
-
-    public function getFunctions(): array
-    {
-        return $this->functions;
-    }
-
-    public function getProperties(): array
-    {
-        return $this->properties;
-    }
-
-    public function getTraits(): array
-    {
-        return $this->traits;
+        return $codeExtractor->getCodeExtract();
     }
 }

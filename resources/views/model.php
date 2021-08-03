@@ -4,6 +4,9 @@ namespace Picqer\Financials\Exact;
  * Class <?php echo $endpoint->getClassName(); ?>.
  *
  * @see <?php echo $endpoint->documentation . PHP_EOL; ?>
+<?php if (!is_null($deprecationDocComment)):
+    echo $deprecationDocComment . PHP_EOL;
+endif; ?>
  *
 <?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
  * <?php echo $property->toPhpDoc(); ?>
@@ -37,8 +40,8 @@ class <?php echo $endpoint->getClassName(); ?> extends Model
     ];
 
     protected $url = '<?php echo $endpoint->getClassUri(); ?>';
-<?php foreach ($methods as $method): ?>
+<?php foreach ($functions as $function): ?>
 
-    <?php echo $method . PHP_EOL; ?>
+<?php echo $function . PHP_EOL; ?>
 <?php endforeach; ?>
 }

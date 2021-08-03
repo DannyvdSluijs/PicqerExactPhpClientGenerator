@@ -47,6 +47,7 @@ class EndpointDecorator
         $namingConventionExceptions = [
             '/api/v1/system/Users' => 'SystemUser',
             '/api/v1/{division}/system/Divisions' => 'SystemDivision',
+            '/api/v1/{division}/vat/VATCodes' => 'VatCode',
         ];
 
         if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
@@ -102,7 +103,7 @@ class EndpointDecorator
             return null;
         }
 
-        return new PropertyDecorator(array_shift($primaryKeyProperties));
+        return new PropertyDecorator(array_pop($primaryKeyProperties));
     }
 
     public function supportsPostMethod(): bool

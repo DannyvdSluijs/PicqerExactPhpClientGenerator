@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aac9f911ad428875baa30b1f5243bfd9",
+    "content-hash": "0b1a4f100ecc777b13161717e3ee3c55",
     "packages": [
         {
             "name": "dannyvandersluijs/exact-online-meta-data-tool",
-            "version": "dev-develop",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool.git",
-                "reference": "4c257eff064f5831b64f4d63a37997906f6027c5"
+                "reference": "7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/4c257eff064f5831b64f4d63a37997906f6027c5",
-                "reference": "4c257eff064f5831b64f4d63a37997906f6027c5",
+                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd",
+                "reference": "7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd",
                 "shasum": ""
             },
             "require": {
@@ -36,7 +36,6 @@
                 "phpunit/phpunit": "^8.5 || ^9.0",
                 "squizlabs/php_codesniffer": "^3.5"
             },
-            "default-branch": true,
             "type": "project",
             "autoload": {
                 "psr-4": {
@@ -56,9 +55,9 @@
             "description": "A meta data tool for the ExactOnline API documentation",
             "support": {
                 "issues": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/issues",
-                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/develop"
+                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.5.0"
             },
-            "time": "2021-06-16T18:39:46+00:00"
+            "time": "2021-08-03T18:18:54+00:00"
         },
         {
             "name": "json-mapper/json-mapper",
@@ -3302,9 +3301,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "dannyvandersluijs/exact-online-meta-data-tool": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
