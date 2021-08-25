@@ -71,10 +71,12 @@ HELP
             $decoratedEndpoint = new EndpointDecorator($endpoint, $input->getArgument('sources'));
             $filename = $decoratedEndpoint->getFilename();
 
-            if (is_readable($filename)) {
-                $extractor = new CodeExtractor($filename);
-                $codeExtract = $extractor->extract();
+            if (!is_readable($filename)) {
+                throw new \Exception('Unable to read file: ' . $filename);
             }
+
+            $extractor = new CodeExtractor($filename);
+            $codeExtract = $extractor->extract();
 
             $src = $templating->render('model.php', [
                 'endpoint' => $decoratedEndpoint,

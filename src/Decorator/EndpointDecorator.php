@@ -36,7 +36,7 @@ class EndpointDecorator
         return $this->decorateProperties(array_filter(
             $this->endpoint->properties,
             static function ($p) {
-                return strtolower($p->description) !== 'obsolete';
+                return !$p->hidden && !str_contains(strtolower($p->description), 'obsolete');
             }
         ));
     }
