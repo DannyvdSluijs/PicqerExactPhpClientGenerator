@@ -50,9 +50,12 @@ class PropertyDecorator
         if (str_starts_with($this->property->type, 'Class_') || $this->property->type === 'Exact.Web.Api.Models.HRM.DivisionClass') {
             return 'DivisionClass';
         }
+        if ($this->property->type === 'Attachments') {
+            return 'DocumentAttachment[]';
+        }
 
         if (str_starts_with($this->property->description, 'Collection') || ! str_starts_with($this->property->type, 'Edm.')) {
-            // Some cases arent properly handled by inflector
+            // Some cases aren't properly handled by inflector
             $exceptions = [
                 'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
                 'ItemWarehouses' => 'ItemWarehouse',
@@ -76,6 +79,4 @@ class PropertyDecorator
             default => 'string'
         };
     }
-
-
 }

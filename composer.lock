@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b1a4f100ecc777b13161717e3ee3c55",
+    "content-hash": "beeb9f2b4855cb43526401c4a22f910e",
     "packages": [
         {
             "name": "dannyvandersluijs/exact-online-meta-data-tool",
-            "version": "1.5.0",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool.git",
-                "reference": "7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd"
+                "reference": "cd809f04c6950077c0f55a284917bd5cd2370758"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd",
-                "reference": "7f6f6ff8a4aa6c6239d53573b84bdeabde2767cd",
+                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/cd809f04c6950077c0f55a284917bd5cd2370758",
+                "reference": "cd809f04c6950077c0f55a284917bd5cd2370758",
                 "shasum": ""
             },
             "require": {
@@ -55,9 +55,9 @@
             "description": "A meta data tool for the ExactOnline API documentation",
             "support": {
                 "issues": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/issues",
-                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.5.0"
+                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.6.0"
             },
-            "time": "2021-08-03T18:18:54+00:00"
+            "time": "2021-11-24T21:30:04+00:00"
         },
         {
             "name": "json-mapper/json-mapper",
@@ -3308,5 +3308,5 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

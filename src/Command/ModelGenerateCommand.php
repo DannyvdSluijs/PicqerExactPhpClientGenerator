@@ -18,11 +18,10 @@ use Symfony\Component\Templating\Helper\SlotsHelper;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Component\Templating\PhpEngine;
 use Symfony\Component\Templating\TemplateNameParser;
-use Throwable;
 
 class ModelGenerateCommand extends Command
 {
-    protected static string $defaultName = 'run';
+    protected static $defaultName = 'run';
     protected static string $metaDataFile = '.meta/meta-data.json';
 
     private InputInterface $input;
@@ -72,7 +71,7 @@ HELP
             $filename = $decoratedEndpoint->getFilename();
 
             if (!is_readable($filename)) {
-                throw new \Exception('Unable to read file: ' . $filename);
+                touch($filename);
             }
 
             $extractor = new CodeExtractor($filename);
@@ -98,7 +97,6 @@ HELP
     {
         if ($this->input->getOption('refresh-meta-data') || !is_readable(self::$metaDataFile)) {
             $this->output->writeln('Refreshing exact online meta data (This might takes some time)');
-
             $metaDataCommand = new MetaDataBuilderCommand();
             $metaDataCommand->run(
                 new ArrayInput(['--destination' => dirname(self::$metaDataFile)], $metaDataCommand->getDefinition()),

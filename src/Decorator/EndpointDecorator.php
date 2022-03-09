@@ -43,22 +43,40 @@ class EndpointDecorator
 
     public function getClassName(): string
     {
-        // Some cases dont follow the naming conventions
+        // Some cases don't follow the naming conventions or are reserved keywords in PHP
         $namingConventionExceptions = [
             '/api/v1/system/Users' => 'SystemUser',
             '/api/v1/{division}/system/Divisions' => 'SystemDivision',
             '/api/v1/{division}/vat/VATCodes' => 'VatCode',
+            '/api/v1/{division}/read/financial/Returns' => 'Returns', // Return is a reserved keyword in PHP
+            '/api/v1/{division}/sync/Inventory/StockPositions' => '', // Collides with '/api/v1/{division}/read/logistics/StockPosition'
+            '/api/v1/{division}/openingbalance/PreviousYear/AfterEntry' =>'PreviousYearAfterEntry',
+            '/api/v1/{division}/sync/Cashflow/PaymentTerms' => 'SyncPaymentTerm',
+            '/api/v1/{division}/openingbalance/PreviousYear/Processed' => 'PreviousYearProcessed',
+            '/api/v1/{division}/read/project/RecentCostsByNumberOfWeeks' => 'RecentCostsByNumberOfWeeks',
+            '/api/v1/{division}/read/project/RecentHoursByNumberOfWeeks' => 'RecentHoursByNumberOfWeeks',
+            '/api/v1/{division}/read/financial/RevenueListByYearAndStatus?year={Edm.Int32}&afterEntry={Edm.Boolean}' => 'RevenueListByYearAndStatus'
+
         ];
 
         if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
             return $namingConventionExceptions[$this->endpoint->uri];
         }
 
-        // Some cases arent properly handled by inflector
+        // Some cases aren't properly handled by inflector
         $exceptions = [
             'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
             'ItemWarehouses' => 'ItemWarehouse',
+            'Inventory\ItemWarehouses' => 'Inventory\ItemWarehouse',
             'Warehouses' => 'Warehouse',
+            'BulkProjectProjectWBS' => 'BulkProjectProjectWBS',
+            'ReadProjectProjectWBSByProjectAndWBS' => 'ReadProjectProjectWBSByProjectAndWBS',
+            'SalesItemPrice' => 'SalesItemPrice',
+            'TimeAndBillingActivitiesAndExpenses' => 'TimeAndBillingActivitiesAndExpense',
+            'TimeAndBillingEntryRecentActivitiesAndExpenses' => 'TimeAndBillingEntryRecentActivitiesAndExpense',
+            'WBSExpenses' => 'WBSExpense',
+            'ProjectWBS' => 'ProjectWBS',
+            'ProjectWBSByProjectAndWBS' => 'ProjectWBSByProjectAndWBS',
         ];
 
         if (array_key_exists($this->endpoint->endpoint, $exceptions)) {

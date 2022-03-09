@@ -7,7 +7,7 @@
     "require": {
         "symfony/console": "^5.3",
         "php": "^8.0",
-        "dannyvandersluijs/exact-online-meta-data-tool": "^1.5",
+        "dannyvandersluijs/exact-online-meta-data-tool": "^1.6",
         "json-mapper/json-mapper": "^2.5",
         "symfony/templating": "^5.3",
         "symfony/string": "^5.3",
