@@ -49,14 +49,17 @@ class EndpointDecorator
             '/api/v1/{division}/system/Divisions' => 'SystemDivision',
             '/api/v1/{division}/vat/VATCodes' => 'VatCode',
             '/api/v1/{division}/read/financial/Returns' => 'Returns', // Return is a reserved keyword in PHP
-            '/api/v1/{division}/sync/Inventory/StockPositions' => '', // Collides with '/api/v1/{division}/read/logistics/StockPosition'
+            '/api/v1/{division}/sync/Inventory/StockPositions' => 'SyncInventoryStockPosition', // As it collides with '/api/v1/{division}/read/logistics/StockPosition'
+            '/api/v1/{division}/sync/Project/Projects' => 'SyncProjects', // As it collides with '/api/v1/{division}/project/Projects'
             '/api/v1/{division}/openingbalance/PreviousYear/AfterEntry' =>'PreviousYearAfterEntry',
             '/api/v1/{division}/sync/Cashflow/PaymentTerms' => 'SyncPaymentTerm',
             '/api/v1/{division}/openingbalance/PreviousYear/Processed' => 'PreviousYearProcessed',
             '/api/v1/{division}/read/project/RecentCostsByNumberOfWeeks' => 'RecentCostsByNumberOfWeeks',
             '/api/v1/{division}/read/project/RecentHoursByNumberOfWeeks' => 'RecentHoursByNumberOfWeeks',
-            '/api/v1/{division}/read/financial/RevenueListByYearAndStatus?year={Edm.Int32}&afterEntry={Edm.Boolean}' => 'RevenueListByYearAndStatus'
-
+            '/api/v1/{division}/read/financial/RevenueListByYearAndStatus?year={Edm.Int32}&afterEntry={Edm.Boolean}' => 'RevenueListByYearAndStatus',
+            '/api/v1/{division}/logistics/ReasonCodes' => 'LogisticsReasonsCodes', // As it collides with '/api/v1/{division}/crm/ReasonCodes'
+            '/api/v1/{division}/openingbalance/CurrentYear/AfterEntry' => 'CurrentYearAfterEntry',
+            '/api/v1/{division}/openingbalance/CurrentYear/Processed' => 'CurrentYearProcessed',
         ];
 
         if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
@@ -67,7 +70,7 @@ class EndpointDecorator
         $exceptions = [
             'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
             'ItemWarehouses' => 'ItemWarehouse',
-            'Inventory\ItemWarehouses' => 'Inventory\ItemWarehouse',
+            'Inventory/ItemWarehouses' => 'InventoryItemWarehouse',
             'Warehouses' => 'Warehouse',
             'BulkProjectProjectWBS' => 'BulkProjectProjectWBS',
             'ReadProjectProjectWBSByProjectAndWBS' => 'ReadProjectProjectWBSByProjectAndWBS',
@@ -75,8 +78,9 @@ class EndpointDecorator
             'TimeAndBillingActivitiesAndExpenses' => 'TimeAndBillingActivitiesAndExpense',
             'TimeAndBillingEntryRecentActivitiesAndExpenses' => 'TimeAndBillingEntryRecentActivitiesAndExpense',
             'WBSExpenses' => 'WBSExpense',
-            'ProjectWBS' => 'ProjectWBS',
+            'Project/ProjectWBS' => 'ProjectWBS',
             'ProjectWBSByProjectAndWBS' => 'ProjectWBSByProjectAndWBS',
+            'RevenueListByYearAndStatus' => 'RevenueListByYearAndStatus'
         ];
 
         if (array_key_exists($this->endpoint->endpoint, $exceptions)) {

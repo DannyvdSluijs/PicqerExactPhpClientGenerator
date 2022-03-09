@@ -54,6 +54,10 @@ class PropertyDecorator
             return 'DocumentAttachment[]';
         }
 
+        if ($this->property->type === 'Exact.Web.Api.Models.Manufacturing.MaterialPlanCalculator') {
+            return 'string';
+        }
+
         if (str_starts_with($this->property->description, 'Collection') || ! str_starts_with($this->property->type, 'Edm.')) {
             // Some cases aren't properly handled by inflector
             $exceptions = [
