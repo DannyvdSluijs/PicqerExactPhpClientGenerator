@@ -43,14 +43,15 @@ class EndpointDecorator
 
     public function getClassName(): string
     {
+        $isSyncEndpoint = str_contains($this->endpoint->uri, '/api/v1/{division}/sync');
+
         // Some cases don't follow the naming conventions or are reserved keywords in PHP
         $namingConventionExceptions = [
             '/api/v1/system/Users' => 'SystemUser',
             '/api/v1/{division}/system/Divisions' => 'SystemDivision',
+            '/api/v1/{division}/hrm/Divisions' => 'HrmDivision',
             '/api/v1/{division}/vat/VATCodes' => 'VatCode',
             '/api/v1/{division}/read/financial/Returns' => 'Returns', // Return is a reserved keyword in PHP
-            '/api/v1/{division}/sync/Inventory/StockPositions' => 'SyncInventoryStockPosition', // As it collides with '/api/v1/{division}/read/logistics/StockPosition'
-            '/api/v1/{division}/sync/Project/Projects' => 'SyncProjects', // As it collides with '/api/v1/{division}/project/Projects'
             '/api/v1/{division}/openingbalance/PreviousYear/AfterEntry' =>'PreviousYearAfterEntry',
             '/api/v1/{division}/sync/Cashflow/PaymentTerms' => 'SyncPaymentTerm',
             '/api/v1/{division}/openingbalance/PreviousYear/Processed' => 'PreviousYearProcessed',
@@ -60,6 +61,8 @@ class EndpointDecorator
             '/api/v1/{division}/logistics/ReasonCodes' => 'LogisticsReasonsCodes', // As it collides with '/api/v1/{division}/crm/ReasonCodes'
             '/api/v1/{division}/openingbalance/CurrentYear/AfterEntry' => 'CurrentYearAfterEntry',
             '/api/v1/{division}/openingbalance/CurrentYear/Processed' => 'CurrentYearProcessed',
+            '/api/v1/{division}/sync/Inventory/ItemWarehouses' => 'SyncInventoryItemWarehouse',
+            '/api/v1/{division}/manufacturing/TimeTransactions' => 'ManufacturingTimeTransactions',
         ];
 
         if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
@@ -84,6 +87,9 @@ class EndpointDecorator
         ];
 
         if (array_key_exists($this->endpoint->endpoint, $exceptions)) {
+            if ($isSyncEndpoint) {
+                return 'Sync' . $exceptions[$this->endpoint->endpoint];
+            }
             return $exceptions[$this->endpoint->endpoint];
         }
 
@@ -91,8 +97,13 @@ class EndpointDecorator
         $parts = explode('/', $this->endpoint->endpoint);
         $className = array_pop($parts);
         $singleOptions = $inflector->singularize($className);
+        $name = array_pop($singleOptions);
 
-        return array_pop($singleOptions);
+        if ($isSyncEndpoint) {
+            return 'Sync' . $name;
+        }
+
+        return $name;
     }
 
     public function getClassUri(): string

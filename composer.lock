@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "beeb9f2b4855cb43526401c4a22f910e",
+    "content-hash": "5ca6cf14999a72eb4e0fc25f98849a1f",
     "packages": [
         {
             "name": "dannyvandersluijs/exact-online-meta-data-tool",
-            "version": "1.6.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool.git",
-                "reference": "cd809f04c6950077c0f55a284917bd5cd2370758"
+                "reference": "9728cfd9ea177380f79dd9e3b614072f54b69df3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/cd809f04c6950077c0f55a284917bd5cd2370758",
-                "reference": "cd809f04c6950077c0f55a284917bd5cd2370758",
+                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/9728cfd9ea177380f79dd9e3b614072f54b69df3",
+                "reference": "9728cfd9ea177380f79dd9e3b614072f54b69df3",
                 "shasum": ""
             },
             "require": {
@@ -36,6 +36,9 @@
                 "phpunit/phpunit": "^8.5 || ^9.0",
                 "squizlabs/php_codesniffer": "^3.5"
             },
+            "bin": [
+                "exact-online-meta-data-tool"
+            ],
             "type": "project",
             "autoload": {
                 "psr-4": {
@@ -55,9 +58,9 @@
             "description": "A meta data tool for the ExactOnline API documentation",
             "support": {
                 "issues": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/issues",
-                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.6.0"
+                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.8.0"
             },
-            "time": "2021-11-24T21:30:04+00:00"
+            "time": "2022-03-29T09:40:45+00:00"
         },
         {
             "name": "json-mapper/json-mapper",
