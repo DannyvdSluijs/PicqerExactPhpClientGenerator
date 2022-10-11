@@ -45,7 +45,7 @@ class EndpointDecorator
     {
         $isSyncEndpoint = str_contains($this->endpoint->uri, '/api/v1/{division}/sync');
 
-        // Some cases don't follow the naming conventions or are reserved keywords in PHP
+        // Some cases don't follow the naming conventions, have naming clashes within Exact or are reserved keywords in PHP
         $namingConventionExceptions = [
             '/api/v1/system/Users' => 'SystemUser',
             '/api/v1/{division}/system/Divisions' => 'SystemDivision',
@@ -57,12 +57,16 @@ class EndpointDecorator
             '/api/v1/{division}/openingbalance/PreviousYear/Processed' => 'PreviousYearProcessed',
             '/api/v1/{division}/read/project/RecentCostsByNumberOfWeeks' => 'RecentCostsByNumberOfWeeks',
             '/api/v1/{division}/read/project/RecentHoursByNumberOfWeeks' => 'RecentHoursByNumberOfWeeks',
+            '/api/v1/{division}/read/crm/Documents' => 'CrmDocument',
+            '/api/v1/{division}/read/crm/DocumentsAttachments' => 'CrmDocumentAttachment',
             '/api/v1/{division}/read/financial/RevenueListByYearAndStatus?year={Edm.Int32}&afterEntry={Edm.Boolean}' => 'RevenueListByYearAndStatus',
             '/api/v1/{division}/logistics/ReasonCodes' => 'LogisticsReasonsCodes', // As it collides with '/api/v1/{division}/crm/ReasonCodes'
             '/api/v1/{division}/openingbalance/CurrentYear/AfterEntry' => 'CurrentYearAfterEntry',
             '/api/v1/{division}/openingbalance/CurrentYear/Processed' => 'CurrentYearProcessed',
             '/api/v1/{division}/sync/Inventory/ItemWarehouses' => 'SyncInventoryItemWarehouse',
-            '/api/v1/{division}/manufacturing/TimeTransactions' => 'ManufacturingTimeTransactions',
+            '/api/v1/{division}/manufacturing/TimeTransactions' => 'ManufacturingTimeTransaction',
+            '/api/v1/{division}/project/TimeTransactions' => 'ProjectTimeTransaction',
+
         ];
 
         if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
@@ -83,7 +87,8 @@ class EndpointDecorator
             'WBSExpenses' => 'WBSExpense',
             'Project/ProjectWBS' => 'ProjectWBS',
             'ProjectWBSByProjectAndWBS' => 'ProjectWBSByProjectAndWBS',
-            'RevenueListByYearAndStatus' => 'RevenueListByYearAndStatus'
+            'RevenueListByYearAndStatus' => 'RevenueListByYearAndStatus',
+            'LeadPurposes' => 'LeadPurpose',
         ];
 
         if (array_key_exists($this->endpoint->endpoint, $exceptions)) {
