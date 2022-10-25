@@ -10,10 +10,12 @@ class PropertyDecorator
 {
     /** @var \stdClass */
     private $property;
+    private EndpointDecorator $endpoint;
 
-    public function __construct(\stdClass $property)
+    public function __construct(\stdClass $property, EndpointDecorator $endpoint)
     {
         $this->property = $property;
+        $this->endpoint = $endpoint;
     }
 
     public function __get(string $param)
@@ -49,6 +51,9 @@ class PropertyDecorator
         // Some types are mis-documented
         if (str_starts_with($this->property->type, 'Class_') || $this->property->type === 'Exact.Web.Api.Models.HRM.DivisionClass') {
             return 'DivisionClass';
+        }
+        if ($this->property->type === 'Attachments' && $this->endpoint->getClassName() === 'CrmDocument') {
+            return 'CrmDocumentAttachment[]';
         }
         if ($this->property->type === 'Attachments') {
             return 'DocumentAttachment[]';

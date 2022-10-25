@@ -141,7 +141,7 @@ class EndpointDecorator
             return null;
         }
 
-        return new PropertyDecorator(array_pop($primaryKeyProperties));
+        return new PropertyDecorator(array_pop($primaryKeyProperties), $this);
     }
 
     public function supportsPostMethod(): bool
@@ -165,7 +165,7 @@ class EndpointDecorator
 
     private function decorateProperties(array $properties): array
     {
-        return array_map(fn($p) => new PropertyDecorator($p), $properties);
+        return array_map(fn($p) => new PropertyDecorator($p, $this), $properties);
     }
 
     private function decorateDocumentation(): string
