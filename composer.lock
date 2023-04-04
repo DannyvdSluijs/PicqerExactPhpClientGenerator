@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "dannyvandersluijs/exact-online-meta-data-tool",
-            "version": "1.8.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool.git",
-                "reference": "9728cfd9ea177380f79dd9e3b614072f54b69df3"
+                "reference": "163050493962a5fab6c8bdaf4dad414b8ccf9d96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/9728cfd9ea177380f79dd9e3b614072f54b69df3",
-                "reference": "9728cfd9ea177380f79dd9e3b614072f54b69df3",
+                "url": "https://api.github.com/repos/DannyvdSluijs/exact-online-meta-data-tool/zipball/163050493962a5fab6c8bdaf4dad414b8ccf9d96",
+                "reference": "163050493962a5fab6c8bdaf4dad414b8ccf9d96",
                 "shasum": ""
             },
             "require": {
@@ -58,9 +58,9 @@
             "description": "A meta data tool for the ExactOnline API documentation",
             "support": {
                 "issues": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/issues",
-                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.8.0"
+                "source": "https://github.com/DannyvdSluijs/exact-online-meta-data-tool/tree/1.9.1"
             },
-            "time": "2022-03-29T09:40:45+00:00"
+            "time": "2023-04-04T20:23:29+00:00"
         },
         {
             "name": "json-mapper/json-mapper",
@@ -3311,5 +3311,5 @@
         "php": "^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }

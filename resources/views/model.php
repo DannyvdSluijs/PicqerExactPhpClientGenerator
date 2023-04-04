@@ -4,9 +4,12 @@ namespace Picqer\Financials\Exact;
  * Class <?php echo $endpoint->getClassName(); ?>.
  *
  * @see <?php echo $endpoint->documentation . PHP_EOL; ?>
-<?php if (!is_null($deprecationDocComment)):
+<?php if (!is_null($deprecationDocComment) && !$endpoint->deprecated):
     echo $deprecationDocComment . PHP_EOL;
 endif; ?>
+<?php if ($endpoint->deprecated): ?>
+ * @deprecated ExactOnline has indicated this endpoint is deprecated, for more details see the documentation page
+<?php endif; ?>
  *
 <?php foreach ($endpoint->getNonObsoleteProperties() as $property): ?>
  * <?php echo $property->toPhpDoc(); ?>
