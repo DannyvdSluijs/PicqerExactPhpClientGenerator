@@ -7,6 +7,7 @@ namespace PicqerExactPhpClientGenerator\Extractor\ValueObject;
 class CodeExtract
 {
     public function __construct(
+        private ?int $strictType = null,
         private ?string $deprecationDocComment = null,
         private ?string $additionalClassDocComment = null,
         private array $functions = [],
@@ -14,6 +15,11 @@ class CodeExtract
         private array $properties = [],
     )
     {
+    }
+
+    public function getStrictType(): ?int
+    {
+        return $this->strictType;
     }
 
     public function getDeprecationDocComment(): ?string

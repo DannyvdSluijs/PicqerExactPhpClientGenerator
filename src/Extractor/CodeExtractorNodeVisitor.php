@@ -8,6 +8,8 @@ namespace PicqerExactPhpClientGenerator\Extractor;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\DeclareDeclare;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeVisitorAbstract;
@@ -18,6 +20,7 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
 {
     private const SKIPPED_PROPERTIES = ['fillable', 'primaryKey', 'url'];
     private Standard $printer;
+    private ?int $strictTypes = null;
     private ?string $deprecationDocComment = null;
     private ?string $additionalClassDocComment = null;
     private array $functions = [];
@@ -31,11 +34,17 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): void
     {
+        if ($node instanceof Declare_) {
+            $matches = array_filter($node->declares, static fn(DeclareDeclare $n) => $n->key->name === 'strict_types');
+            $match = array_shift($matches);
+
+            $this->strictTypes = $match->value->value;
+        }
         if ($node instanceof Class_) {
             $classDocComment = $node->getDocComment()->getText();
             $lines = explode("\n", $classDocComment);
 
-            $matches = array_filter($lines, static function ($line) { return str_contains($line, '@deprecated'); });
+            $matches = array_filter($lines, static function ($line): bool { return str_contains($line, '@deprecated'); });
             $this->deprecationDocComment = array_pop($matches);
 
 
@@ -61,7 +70,7 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Property) {
-            $result = array_filter($node->props, function (Node\Stmt\PropertyProperty $prop) {
+            $result = array_filter($node->props, function (Node\Stmt\PropertyProperty $prop): bool {
                 return in_array($prop->name->name, self::SKIPPED_PROPERTIES);
             });
             if (count($result) > 0) {
@@ -76,6 +85,7 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
     public function getCodeExtract(): CodeExtract
     {
         return new CodeExtract(
+            $this->strictTypes,
             $this->deprecationDocComment,
             $this->additionalClassDocComment,
             $this->functions,

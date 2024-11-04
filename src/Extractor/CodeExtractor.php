@@ -11,7 +11,7 @@ use PhpParser\Lexer;
 use PicqerExactPhpClientGenerator\Extractor\ValueObject\CodeExtract;
 use Throwable;
 
-class CodeExtractor
+readonly class CodeExtractor
 {
 
     public function __construct(

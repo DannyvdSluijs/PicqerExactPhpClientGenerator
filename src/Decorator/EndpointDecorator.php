@@ -6,6 +6,9 @@ namespace PicqerExactPhpClientGenerator\Decorator;
 
 use Symfony\Component\String\Inflector\EnglishInflector;
 
+/**
+ * @property string documentation
+ */
 class EndpointDecorator
 {
     private ?EnglishInflector $inflector;
@@ -35,7 +38,7 @@ class EndpointDecorator
     {
         return $this->decorateProperties(array_filter(
             $this->endpoint->properties,
-            static function ($p) {
+            static function ($p): bool {
                 return !$p->hidden && !str_contains(strtolower($p->description), 'obsolete');
             }
         ));
@@ -165,7 +168,7 @@ class EndpointDecorator
 
     private function decorateProperties(array $properties): array
     {
-        return array_map(fn($p) => new PropertyDecorator($p, $this), $properties);
+        return array_map(fn($p): \PicqerExactPhpClientGenerator\Decorator\PropertyDecorator => new PropertyDecorator($p, $this), $properties);
     }
 
     private function decorateDocumentation(): string

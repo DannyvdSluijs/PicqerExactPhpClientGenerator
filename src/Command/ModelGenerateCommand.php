@@ -6,6 +6,7 @@ namespace PicqerExactPhpClientGenerator\Command;
 
 use MetaDataTool\Command\MetaDataBuilderCommand;
 use PicqerExactPhpClientGenerator\Decorator\EndpointDecorator;
+use PicqerExactPhpClientGenerator\EndpointClassFacade;
 use PicqerExactPhpClientGenerator\Extractor\CodeExtractor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Templating\Helper\SlotsHelper;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Component\Templating\PhpEngine;
@@ -53,41 +55,25 @@ HELP
 
         if ($input->getOption('endpoint')) {
             $desiredEndpoint = $input->getOption('endpoint');
-            $endpoints = array_filter($json, static function($endpoint) use ($desiredEndpoint) {
+            $endpoints = array_filter($json, static function($endpoint) use ($desiredEndpoint): bool {
                 return $endpoint->endpoint === $desiredEndpoint;
             });
         } else {
             $endpoints = $json;
         }
 
-        $filesystemLoader = new FilesystemLoader('resources/views/%name%');
-        $templating = new PhpEngine(new TemplateNameParser(), $filesystemLoader);
-        $templating->set(new SlotsHelper());
+        $templating = $this->createTemplateEngine();
 
         foreach ($endpoints as $endpoint) {
             $output->writeln(sprintf('Processing endpoint "%s"', $endpoint->endpoint));
 
-            $decoratedEndpoint = new EndpointDecorator($endpoint, $input->getArgument('sources'));
-            $filename = $decoratedEndpoint->getFilename();
-
-            if (!is_readable($filename)) {
-                touch($filename);
-            }
-
-            $extractor = new CodeExtractor($filename);
-            $codeExtract = $extractor->extract();
-
+            $facade = new EndpointClassFacade($endpoint, $input->getArgument('sources'));
             $src = $templating->render('model.php', [
-                'endpoint' => $decoratedEndpoint,
-                'deprecationDocComment' => $codeExtract->getDeprecationDocComment(),
-                'additionalClassDocComment' => $codeExtract->getAdditionalClassDocComment(),
-                'properties' => $codeExtract->getProperties(),
-                'traits' => $codeExtract->getTraits(),
-                'functions' => $codeExtract->getFunctions(),
+                'endpoint' => new EndpointClassFacade($endpoint, $input->getArgument('sources')),
             ]);
 
-            file_put_contents($filename, "<?php\n\n$src");
-            $output->writeln(sprintf('Updated/Created file "%s" for endpoint "%s"', $filename, $endpoint->endpoint));
+            file_put_contents($facade->filename, "<?php\n\n$src");
+            $output->writeln(sprintf('Updated/Created file "%s" for endpoint "%s"', $facade->filename, $endpoint->endpoint));
         }
 
         return 0;
@@ -105,5 +91,14 @@ HELP
 
             $this->output->writeln('Refreshed exact online meta data');
         }
+    }
+
+    private function createTemplateEngine(): EngineInterface
+    {
+        $filesystemLoader = new FilesystemLoader('resources/views/%name%');
+        $templating = new PhpEngine(new TemplateNameParser(), $filesystemLoader);
+        $templating->set(new SlotsHelper());
+
+        return $templating;
     }
 }

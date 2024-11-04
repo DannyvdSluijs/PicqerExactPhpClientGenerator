@@ -8,8 +8,7 @@ use Symfony\Component\String\Inflector\EnglishInflector;
 
 class PropertyDecorator
 {
-    /** @var \stdClass */
-    private $property;
+    private \stdClass $property;
     private EndpointDecorator $endpoint;
 
     public function __construct(\stdClass $property, EndpointDecorator $endpoint)
