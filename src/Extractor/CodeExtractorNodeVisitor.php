@@ -62,7 +62,7 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof ClassMethod) {
-            $this->functions[] = $this->readCodeFromFile($node);
+            $this->functions[$node->name->name] = $this->readCodeFromFile($node);
         }
 
         if ($node instanceof TraitUse) {

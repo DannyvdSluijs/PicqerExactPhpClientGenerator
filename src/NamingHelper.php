@@ -2,42 +2,17 @@
 
 declare(strict_types=1);
 
-namespace PicqerExactPhpClientGenerator\Decorator;
+namespace PicqerExactPhpClientGenerator;
 
 use PicqerExactPhpClientGenerator\ValueObject\Endpoint;
 use PicqerExactPhpClientGenerator\ValueObject\Property;
-use PicqerExactPhpClientGenerator\ValueObject\PropertyCollection;
 use Symfony\Component\String\Inflector\EnglishInflector;
 
-/**
- * @property string documentation
- */
-class EndpointDecorator
+class NamingHelper
 {
-    private ?EnglishInflector $inflector;
-
-    public function __construct(
-        private Endpoint $endpoint,
-        private string $path
-    )
+    public static function getClassName(Endpoint|EndpointClassFacade $endpoint): string
     {
-    }
-
-    public function getFilename(): string
-    {
-        return sprintf('%s/src/Picqer/Financials/Exact/%s.php', $this->path, $this->getClassName());
-    }
-
-    public function getNonObsoleteProperties(): PropertyCollection
-    {
-        return $this->endpoint->properties->filter(
-            fn(Property $p):bool => !$p->isHidden && !str_contains(strtolower($p->description), 'obsolete')
-        );
-    }
-
-    public function getClassName(): string
-    {
-        $isSyncEndpoint = str_contains($this->endpoint->uri, '/api/v1/{division}/sync');
+        $isSyncEndpoint = str_contains($endpoint->uri, '/api/v1/{division}/sync');
 
         // Some cases don't follow the naming conventions, have naming clashes within Exact or are reserved keywords in PHP
         $namingConventionExceptions = [
@@ -63,8 +38,8 @@ class EndpointDecorator
 
         ];
 
-        if (array_key_exists($this->endpoint->uri, $namingConventionExceptions)) {
-            return $namingConventionExceptions[$this->endpoint->uri];
+        if (array_key_exists($endpoint->uri, $namingConventionExceptions)) {
+            return $namingConventionExceptions[$endpoint->uri];
         }
 
         // Some cases aren't properly handled by inflector
@@ -85,15 +60,15 @@ class EndpointDecorator
             'LeadPurposes' => 'LeadPurpose',
         ];
 
-        if (array_key_exists($this->endpoint->name, $exceptions)) {
+        if (array_key_exists($endpoint->name, $exceptions)) {
             if ($isSyncEndpoint) {
-                return 'Sync' . $exceptions[$this->endpoint->name];
+                return 'Sync' . $exceptions[$endpoint->name];
             }
-            return $exceptions[$this->endpoint->name];
+            return $exceptions[$endpoint->name];
         }
 
-        $inflector = $this->getInflector();
-        $parts = explode('/', $this->endpoint->name);
+        $inflector = new EnglishInflector();
+        $parts = explode('/', $endpoint->name);
         $className = array_pop($parts);
         $singleOptions = $inflector->singularize($className);
         $name = array_pop($singleOptions);
@@ -105,47 +80,46 @@ class EndpointDecorator
         return $name;
     }
 
-    public function getClassUri(): string
+    public static function toPhpPropertyType(Endpoint|EndpointClassFacade $endpoint, Property $property): string
     {
-        if (str_starts_with($this->endpoint->uri, '/api/v1/{division}/')) {
-            return substr($this->endpoint->uri, 19);
+        // Some types are mis-documented
+        if ($property->type === 'Exact.Web.Api.Models.HRM.DivisionClass' || str_starts_with($property->type, 'Class_')) {
+            return 'DivisionClass';
+        }
+        if ($property->type === 'Attachments' && self::getClassName($endpoint) === 'CrmDocument') {
+            return 'CrmDocumentAttachment[]';
+        }
+        if ($property->type === 'Attachments') {
+            return 'DocumentAttachment[]';
         }
 
-        if (str_starts_with($this->endpoint->uri, '/api/v1/')) {
-            return substr($this->endpoint->uri, 8);
+        if ($property->type === 'Exact.Web.Api.Models.Manufacturing.MaterialPlanCalculator') {
+            return 'string';
         }
 
-        return  $this->endpoint->uri;
-    }
+        if (str_starts_with($property->description, 'Collection') || ! str_starts_with($property->type, 'Edm.')) {
+            // Some cases aren't properly handled by inflector
+            $exceptions = [
+                'EmploymentContractFlexPhases' => 'EmploymentContractFlexPhase',
+                'ItemWarehouses' => 'ItemWarehouse',
+                'Warehouses' => 'Warehouse',
+            ];
 
-    public function hasNonDefaultPrimaryKeyProperty(): bool
-    {
-        $primaryKeyProperty = $this->primaryKeyProperty();
-        return $primaryKeyProperty && $primaryKeyProperty->name !== 'ID';
-    }
+            if (array_key_exists($property->type, $exceptions)) {
+                return $exceptions[$property->type] . '[]';
+            }
 
-    public function primaryKeyProperty(): ?Property
-    {
-        $primaryKeyProperties = $this->endpoint->properties->filter(fn(Property $p): bool => $p->isPrimaryKey);
+            $inflector = new EnglishInflector();
+            $singleOptions = $inflector->singularize($property->type);
 
-        if (count($primaryKeyProperties) === 0) {
-            return null;
+            return array_pop($singleOptions) . '[]';
         }
 
-        return $primaryKeyProperties->last();
-    }
-
-    public function supportsPostMethod(): bool
-    {
-        return $this->endpoint->supportedMethods->post;
-    }
-
-    private function getInflector(): EnglishInflector
-    {
-        if (!isset($this->inflector)) {
-            $this->inflector = new EnglishInflector();
-        }
-
-        return $this->inflector;
+        return match ($property->type) {
+            'Edm.Int64', 'Edm.Int32', 'Edm.Int16', 'Edm.Byte' => 'int',
+            'Edm.Double' => 'float',
+            'Edm.Boolean' => 'bool',
+            default => 'string'
+        };
     }
 }

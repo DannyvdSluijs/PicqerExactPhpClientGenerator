@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PicqerExactPhpClientGenerator\Command;
 
 use MetaDataTool\Command\MetaDataBuilderCommand;
-use PicqerExactPhpClientGenerator\Decorator\EndpointDecorator;
 use PicqerExactPhpClientGenerator\EndpointClassFacade;
-use PicqerExactPhpClientGenerator\Extractor\CodeExtractor;
+use PicqerExactPhpClientGenerator\ValueObject\Endpoint;
+use PicqerExactPhpClientGenerator\ValueObject\MetaData;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,22 +50,17 @@ HELP
 
         $this->refreshMetaDataIfNeeded();
 
-        $data = file_get_contents(self::$metaDataFile);
-        $json = (array) json_decode($data, false, 512, JSON_THROW_ON_ERROR);
+        $metaData = $this->loadMetaData();
 
+        $endpoints = $metaData->endpoints;
         if ($input->getOption('endpoint')) {
-            $desiredEndpoint = $input->getOption('endpoint');
-            $endpoints = array_filter($json, static function($endpoint) use ($desiredEndpoint): bool {
-                return $endpoint->endpoint === $desiredEndpoint;
-            });
-        } else {
-            $endpoints = $json;
+            $endpoints = $endpoints->filter(fn(Endpoint $endpoint) => $endpoint->name === $input->getOption('endpoint'));
         }
 
         $templating = $this->createTemplateEngine();
 
         foreach ($endpoints as $endpoint) {
-            $output->writeln(sprintf('Processing endpoint "%s"', $endpoint->endpoint));
+            $output->writeln(sprintf('Processing endpoint "%s"', $endpoint->name));
 
             $facade = new EndpointClassFacade($endpoint, $input->getArgument('sources'));
             $src = $templating->render('model.php', [
@@ -73,7 +68,7 @@ HELP
             ]);
 
             file_put_contents($facade->filename, "<?php\n\n$src");
-            $output->writeln(sprintf('Updated/Created file "%s" for endpoint "%s"', $facade->filename, $endpoint->endpoint));
+            $output->writeln(sprintf('Updated/Created file "%s" for endpoint "%s"', $facade->filename, $endpoint->name));
         }
 
         return 0;
@@ -100,5 +95,13 @@ HELP
         $templating->set(new SlotsHelper());
 
         return $templating;
+    }
+
+    private function loadMetaData(): MetaData
+    {
+        $data = file_get_contents(self::$metaDataFile);
+        $json = (array) json_decode($data, flags: JSON_THROW_ON_ERROR);
+
+        return MetaData::fromStdClass($json);
     }
 }
