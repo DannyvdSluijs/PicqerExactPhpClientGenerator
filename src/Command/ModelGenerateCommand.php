@@ -21,13 +21,19 @@ use Symfony\Component\Templating\Loader\FilesystemLoader;
 use Symfony\Component\Templating\PhpEngine;
 use Symfony\Component\Templating\TemplateNameParser;
 
+
 class ModelGenerateCommand extends Command
 {
-    protected static $defaultName = 'run';
     protected static string $metaDataFile = '.meta/meta-data.json';
 
     private InputInterface $input;
     private OutputInterface $output;
+
+    public function __construct()
+    {
+        parent::__construct('run');
+    }
+
 
     protected function configure(): void
     {

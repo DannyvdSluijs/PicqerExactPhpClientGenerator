@@ -22,14 +22,8 @@ readonly class CodeExtractor
 
     public function extract(): CodeExtract
     {
-        $lexer = new Lexer\Emulative([
-            'usedAttributes' => [
-                'comments',
-                'startLine', 'endLine',
-                'startTokenPos', 'endTokenPos',
-            ],
-        ]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $factory = new ParserFactory();
+        $parser = $factory->createForNewestSupportedVersion();
 
         $code = file_get_contents($this->filename);
         try {

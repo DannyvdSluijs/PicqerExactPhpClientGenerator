@@ -66,7 +66,7 @@ class CodeExtractorNodeVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof TraitUse) {
-            $this->traits[] = implode('\\', $node->traits[0]->parts);
+            $this->traits[] = implode('\\', $node->traits[0]->getParts());
         }
 
         if ($node instanceof Property) {
