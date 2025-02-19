@@ -13,6 +13,7 @@ class NamingHelper
     public static function getClassName(Endpoint|EndpointClassFacade $endpoint): string
     {
         $isSyncEndpoint = str_contains($endpoint->uri, '/api/v1/{division}/sync');
+        $isBulkEndpoint = str_contains($endpoint->uri, '/api/v1/{division}/bulk');
 
         // Some cases don't follow the naming conventions, have naming clashes within Exact or are reserved keywords in PHP
         $namingConventionExceptions = [
@@ -73,15 +74,20 @@ class NamingHelper
         $singleOptions = $inflector->singularize($className);
         $name = array_pop($singleOptions);
 
-        if ($isSyncEndpoint) {
-            return 'Sync' . $name;
-        }
-
-        return $name;
+        return match (true) {
+            $isSyncEndpoint => 'Sync' . $name,
+            $isBulkEndpoint => 'Bulk' . $name,
+            default => $name,
+        };
     }
 
     public static function toPhpPropertyType(Endpoint|EndpointClassFacade $endpoint, Property $property): string
     {
+        $type = self::fetchTypeForPropertyOfEndpoint($endpoint, $property);
+        if (!\is_null($type)) {
+            return $type;
+        }
+
         // Some types are mis-documented
         if ($property->type === 'Exact.Web.Api.Models.HRM.DivisionClass' || str_starts_with($property->type, 'Class_')) {
             return 'DivisionClass';
@@ -121,5 +127,71 @@ class NamingHelper
             'Edm.Boolean' => 'bool',
             default => 'string'
         };
+    }
+
+    private static function fetchTypeForPropertyOfEndpoint(Endpoint|EndpointClassFacade $endpoint, Property $property): ?string
+    {
+        try {
+            return match ($endpoint->uri) {
+                '/api/v1/{division}/inventory/AssemblyOrders' => match ($property->type) {
+                    'PartItems' => 'mixed',
+                },
+                '/api/v1/{division}/bulk/SalesOrder/GoodsDeliveries' => match ($property->type) {
+                    'GoodsDeliveryLines' => 'GoodsDeliveryLine',
+                },
+                '/api/v1/{division}/bulk/SalesOrder/GoodsDeliveryLines' => match ($property->type) {
+                    'StockBatchNumbers' => 'StockBatchNumber[]',
+                    'StockSerialNumbers' => 'StockSerialNumber[]',
+                },
+                '/api/v1/{division}/salesorder/DigitalOrderPickingLines' => match ($property->type) {
+                    'PickingLocations' => 'DigitalOrderPickingLine[]',
+                },
+                '/api/v1/{division}/hrm/Divisions' => match ($property->type) {
+                    'DivisionClasses' => 'DivisionClass',
+                },
+                '/api/v1/{division}/logistics/ItemAssortment' => match ($property->type) {
+                    'Properties' => 'ItemAssortmentProperty[]',
+                },
+                '/api/v1/{division}/logistics/ReasonCodes' => match ($property->type) {
+                    'Types' => 'ReasonCodesLinkType[]'
+                },
+                '/api/v1/{division}/read/financial/PayablesList',
+                '/api/v1/{division}/read/financial/PayablesListByAccount',
+                '/api/v1/{division}/read/financial/PayablesListByAccountAndAgeGroup',
+                '/api/v1/{division}/read/financial/PayablesListByAgeGroup',
+                '/api/v1/{division}/read/financial/ReceivablesList',
+                '/api/v1/{division}/read/financial/ReceivablesListByAccount',
+                '/api/v1/{division}/read/financial/ReceivablesListByAccountAndAgeGroup',
+                '/api/v1/{division}/read/financial/ReceivablesListByAgeGroup' => match ($property->type) {
+                    'Notes' => 'string[]',
+                },
+                '/api/v1/{division}/cashflow/ProcessPayments' => match ($property->type) {
+                    'PaymentIDs' => '\stdClass[]',
+                },
+                '/api/v1/{division}/project/Projects' => match ($property->type) {
+                    'BudgetedHoursPerHourType' => 'ProjectHourBudget',
+                },
+                '/api/v1/{division}/logistics/ReasonForLogistics' => match ($property->type) {
+                    'Types' => 'ReasonForLogisticsLinkType[]',
+                },
+                '/api/v1/{division}/hrm/Schedules' => match ($property->type) {
+                    'ScheduleEntries' => 'mixed[]'
+                },
+                '/api/v1/{division}/manufacturing/ShopOrders' => match ($property->type) {
+                    'SalesOrderlines' => 'SalesOrderLine[]'
+                },
+                '/api/v1/{division}/manufacturing/ShopOrderRoutingStepPlans' => match ($property->type) {
+                    'TimeTransactions' => 'ManufacturingTimeTransaction[]',
+                },
+                'users/Users' => match ($property->type) {
+                    'UserRoles' => 'UserRole[]',
+                },
+                '/api/v1/{division}/vat/VATCodes' => match ($property->type) {
+                    'VATPercentages' => 'VatPercentage[]'
+                }
+            };
+        } catch (\UnhandledMatchError) {
+            return null;
+        }
     }
 }

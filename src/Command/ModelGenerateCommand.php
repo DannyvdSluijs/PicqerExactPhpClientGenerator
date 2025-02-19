@@ -60,7 +60,7 @@ HELP
 
         $endpoints = $metaData->endpoints;
         if ($input->getOption('endpoint')) {
-            $endpoints = $endpoints->filter(fn(Endpoint $endpoint) => $endpoint->name === $input->getOption('endpoint'));
+            $endpoints = $endpoints->filter(fn(Endpoint $endpoint) => $endpoint->uri === $input->getOption('endpoint'));
         }
 
         $templating = $this->createTemplateEngine();

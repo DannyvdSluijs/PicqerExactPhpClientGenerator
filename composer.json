@@ -22,6 +22,11 @@
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^1.2"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "PicqerExactPhpClientGeneratorTest\\": "tests/"
+        }
+    },
     "config": {
         "sort-packages": true
     }
