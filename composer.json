@@ -27,6 +27,12 @@
             "PicqerExactPhpClientGeneratorTest\\": "tests/"
         }
     },
+    "scripts": {
+      "unit-tests": "phpunit --testsuite unit --testdox"
+    },
+    "scripts-descriptions": {
+      "tests:unit": "Runs all the unit tests"
+    },
     "config": {
         "sort-packages": true
     }
