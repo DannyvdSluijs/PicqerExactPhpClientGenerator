@@ -142,6 +142,52 @@ class NamingHelper
                 '/api/v1/{division}/bulk/SalesOrder/GoodsDeliveryLines' => match ($property->type) {
                     'StockBatchNumbers' => 'StockBatchNumber[]',
                     'StockSerialNumbers' => 'StockSerialNumber[]',
+                },
+                '/api/v1/{division}/salesorder/DigitalOrderPickingLines' => match ($property->type) {
+                    'PickingLocations' => 'DigitalOrderPickingLine[]',
+                },
+                '/api/v1/{division}/hrm/Divisions' => match ($property->type) {
+                    'DivisionClasses' => 'DivisionClass',
+                },
+                '/api/v1/{division}/logistics/ItemAssortment' => match ($property->type) {
+                    'Properties' => 'ItemAssortmentProperty[]',
+                },
+                '/api/v1/{division}/logistics/ReasonCodes' => match ($property->type) {
+                    'Types' => 'ReasonCodesLinkType[]'
+                },
+                '/api/v1/{division}/read/financial/PayablesList',
+                '/api/v1/{division}/read/financial/PayablesListByAccount',
+                '/api/v1/{division}/read/financial/PayablesListByAccountAndAgeGroup',
+                '/api/v1/{division}/read/financial/PayablesListByAgeGroup',
+                '/api/v1/{division}/read/financial/ReceivablesList',
+                '/api/v1/{division}/read/financial/ReceivablesListByAccount',
+                '/api/v1/{division}/read/financial/ReceivablesListByAccountAndAgeGroup',
+                '/api/v1/{division}/read/financial/ReceivablesListByAgeGroup' => match ($property->type) {
+                    'Notes' => 'string[]',
+                },
+                '/api/v1/{division}/cashflow/ProcessPayments' => match ($property->type) {
+                    'PaymentIDs' => '\stdClass[]',
+                },
+                '/api/v1/{division}/project/Projects' => match ($property->type) {
+                    'BudgetedHoursPerHourType' => 'ProjectHourBudget',
+                },
+                '/api/v1/{division}/logistics/ReasonForLogistics' => match ($property->type) {
+                    'Types' => 'ReasonForLogisticsLinkType[]',
+                },
+                '/api/v1/{division}/hrm/Schedules' => match ($property->type) {
+                    'ScheduleEntries' => 'mixed[]'
+                },
+                '/api/v1/{division}/manufacturing/ShopOrders' => match ($property->type) {
+                    'SalesOrderlines' => 'SalesOrderLine[]'
+                },
+                '/api/v1/{division}/manufacturing/ShopOrderRoutingStepPlans' => match ($property->type) {
+                    'TimeTransactions' => 'ManufacturingTimeTransaction[]',
+                },
+                'users/Users' => match ($property->type) {
+                    'UserRoles' => 'UserRole[]',
+                },
+                '/api/v1/{division}/vat/VATCodes' => match ($property->type) {
+                    'VATPercentages' => 'VatPercentage[]'
                 }
             };
         } catch (\UnhandledMatchError) {
