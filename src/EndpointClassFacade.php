@@ -42,7 +42,7 @@ readonly class EndpointClassFacade
             'isDeprecated' => $this->endpoint->isDeprecated,
             'filename' => $this->endpointDecorator->getFileName(),
             'strictTypes' => $this->codeExtract->getStrictType(),
-            'className' => $this->endpointDecorator->getClassName(),
+            'className' => NamingHelper::getClassName($this->endpoint),
             'documentation' => $this->endpoint->documentation,
             'deprecationDocComment' => $this->codeExtract->getDeprecationDocComment(),
             'additionalClassDocComment' => $this->codeExtract->getAdditionalClassDocComment(),

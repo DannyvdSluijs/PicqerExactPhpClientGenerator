@@ -13,6 +13,7 @@ class NamingHelper
     public static function getClassName(Endpoint|EndpointClassFacade $endpoint): string
     {
         $isSyncEndpoint = str_contains($endpoint->uri, '/api/v1/{division}/sync');
+        $isBulkEndpoint = str_contains($endpoint->uri, '/api/v1/{division}/bulk');
 
         // Some cases don't follow the naming conventions, have naming clashes within Exact or are reserved keywords in PHP
         $namingConventionExceptions = [
@@ -73,15 +74,20 @@ class NamingHelper
         $singleOptions = $inflector->singularize($className);
         $name = array_pop($singleOptions);
 
-        if ($isSyncEndpoint) {
-            return 'Sync' . $name;
-        }
-
-        return $name;
+        return match (true) {
+            $isSyncEndpoint => 'Sync' . $name,
+            $isBulkEndpoint => 'Bulk' . $name,
+            default => $name,
+        };
     }
 
     public static function toPhpPropertyType(Endpoint|EndpointClassFacade $endpoint, Property $property): string
     {
+        $type = self::fetchTypeForPropertyOfEndpoint($endpoint, $property);
+        if (!\is_null($type)) {
+            return $type;
+        }
+
         // Some types are mis-documented
         if ($property->type === 'Exact.Web.Api.Models.HRM.DivisionClass' || str_starts_with($property->type, 'Class_')) {
             return 'DivisionClass';
@@ -121,5 +127,25 @@ class NamingHelper
             'Edm.Boolean' => 'bool',
             default => 'string'
         };
+    }
+
+    private static function fetchTypeForPropertyOfEndpoint(Endpoint|EndpointClassFacade $endpoint, Property $property): ?string
+    {
+        try {
+            return match ($endpoint->uri) {
+                '/api/v1/{division}/inventory/AssemblyOrders' => match ($property->type) {
+                    'PartItems' => 'mixed',
+                },
+                '/api/v1/{division}/bulk/SalesOrder/GoodsDeliveries' => match ($property->type) {
+                    'GoodsDeliveryLines' => 'GoodsDeliveryLine',
+                },
+                '/api/v1/{division}/bulk/SalesOrder/GoodsDeliveryLines' => match ($property->type) {
+                    'StockBatchNumbers' => 'StockBatchNumber[]',
+                    'StockSerialNumbers' => 'StockSerialNumber[]',
+                }
+            };
+        } catch (\UnhandledMatchError) {
+            return null;
+        }
     }
 }
