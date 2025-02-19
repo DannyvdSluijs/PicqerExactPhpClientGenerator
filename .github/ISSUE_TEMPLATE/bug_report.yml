@@ -1,0 +1,27 @@
+name: Bug Report
+description: "Create a report to help us improve"
+title: "[Bug]: "
+labels: ["bug", "triage"]
+assignees:
+  - DannyvdSluijs
+body:
+- type: textarea
+  attributes:
+    label: Description
+    description: Provide a detailed description of the issue you are facing.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Steps To Reproduce
+    description: Provide detailed steps to reproduce your issue.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Stacktrace
+    description: If applicable, add the stack trace to help explain your problem.
+  validations:
+    required: false
