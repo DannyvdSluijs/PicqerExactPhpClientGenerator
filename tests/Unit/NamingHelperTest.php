@@ -47,6 +47,13 @@ class NamingHelperTest extends TestCase
             'expectedClassName' => 'SystemUser'
         ];
 
+        // Plural to singular
+        yield 'Unit' => [
+            'name' => 'logistics/Units',
+            'uri' => '/api/v1/{division}/logistics/Units',
+            'expectedClassName' => 'Unit'
+        ];
+
         // Bulk
         yield 'BulkGoodsDelivery' => [
             'name' => 'SalesOrder/GoodsDeliveries',

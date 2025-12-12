@@ -34,6 +34,7 @@ class NamingHelper
             '/api/v1/{division}/openingbalance/CurrentYear/AfterEntry' => 'CurrentYearAfterEntry',
             '/api/v1/{division}/openingbalance/CurrentYear/Processed' => 'CurrentYearProcessed',
             '/api/v1/{division}/sync/Inventory/ItemWarehouses' => 'SyncInventoryItemWarehouse',
+            '/api/v1/{division}/sync/Deleted' => 'Deleted',
             '/api/v1/{division}/manufacturing/TimeTransactions' => 'ManufacturingTimeTransaction',
             '/api/v1/{division}/project/TimeTransactions' => 'ProjectTimeTransaction',
 
